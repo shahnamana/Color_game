@@ -1,26 +1,31 @@
 # import the modules
 import tkinter
 import random
+import re
 
 # list of possible colour.
 colours = ['Red','Blue','Green','Pink','Black',
 		'Yellow','Orange','White','Purple','Brown']
 score = 0
+filepath = open(r"words_score.txt", "r+")
+
+highscore = filepath.read()
+highscore = highscore.strip()
+highscore = int(highscore)
 
 # the game time left, initially 30 seconds.
 timeleft = 30
 
 # function that will start the game.
 def startGame(event):
-
 	if timeleft == 30:
-
 		# start the countdown timer.
 		countdown()
-
 	# run the function to
 	# choose the next colour.
-	nextColour()
+	if timeleft >=0:
+		nextColour()
+
 
 # Function to choose and
 # display the next colour.
@@ -40,7 +45,6 @@ def nextColour():
 		# if the colour typed is equal
 		# to the colour of the text
 		if e.get().lower() == colours[1].lower():
-
 			score += 1
 
 		# clear the text entry box.
@@ -84,22 +88,20 @@ root = tkinter.Tk()
 root.title("COLORGAME")
 
 # set the size
-root.geometry("375x200")
+root.geometry("375x250")
 
 # add an instructions label
-instructions = tkinter.Label(root, text = "Type in the colour"
-						"of the words, and not the word text!",
-									font = ('Helvetica', 12))
+instructions = tkinter.Label(root, text = "Type in the colour of the words, and not the word text!",font = ('Helvetica', 12))
 instructions.pack()
+previous_highscore = tkinter.Label(root, text="Previous HighScore was "+str(highscore), font=('Helvetica', 12))
+previous_highscore.pack()
 
 # add a score label
-scoreLabel = tkinter.Label(root, text = "Press enter to start",
-									font = ('Helvetica', 12))
+scoreLabel = tkinter.Label(root, text = "Press enter to start",font = ('Helvetica', 12))
 scoreLabel.pack()
 
 # add a time left label
-timeLabel = tkinter.Label(root, text = "Time left: " +
-			str(timeleft), font = ('Helvetica', 12))
+timeLabel = tkinter.Label(root, text = "Time left: " +str(timeleft), font = ('Helvetica', 12))
 
 timeLabel.pack()
 
@@ -118,6 +120,19 @@ e.pack()
 
 # set focus on the entry box
 e.focus_set()
+if timeleft < 0:
+	e.config(state='disabled')
+	
 
+close_btn = tkinter.Button(root, text="Close", command=root.destroy)
+close_btn.pack()
 # start the GUI
 root.mainloop()
+
+if score > highscore:
+	# str_score = str(score)
+	# filepath.write(str_score)
+	wr = open("words_score.txt", 'w')
+	wr.write(str(score))
+	# filepath.truncate()
+	# file_path.write(str(score))
