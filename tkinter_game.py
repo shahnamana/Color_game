@@ -3,14 +3,15 @@ import tkinter
 import random
 import re
 
-# list of possible colour.
+# list of possible colours
 colours = ['Red','Blue','Green','Pink','Black',
-		'Yellow','Orange','White','Purple','Brown']
+		'Yellow','Orange','Purple','Brown','Gray']
 score = 0
 filepath = open(r"words_score.txt", "r+")
 
 highscore = filepath.read()
 highscore = highscore.strip()
+
 highscore = int(highscore)
 
 # the game time left, initially 30 seconds.
@@ -23,9 +24,18 @@ def startGame(event):
 		countdown()
 	# run the function to
 	# choose the next colour.
-	if timeleft >=0:
+	if timeleft > 0:
+		start_btn.config(state='disabled')
 		nextColour()
-
+		root.bind('<Return>', startGame)
+	
+#play again function
+def play_again(event):
+	global timeleft
+	global score
+	score=0
+	timeleft=30
+	startGame(entry.get())
 
 # Function to choose and
 # display the next colour.
@@ -40,15 +50,15 @@ def nextColour():
 	if timeleft > 0:
 
 		# make the text entry box active.
-		e.focus_set()
+		entry.focus_set()
 
 		# if the colour typed is equal
 		# to the colour of the text
-		if e.get().lower() == colours[1].lower():
+		if entry.get().lower() == colours[1].lower():
 			score += 1
 
 		# clear the text entry box.
-		e.delete(0, tkinter.END)
+		entry.delete(0, tkinter.END)
 
 		random.shuffle(colours)
 
@@ -77,7 +87,9 @@ def countdown():
 
 		# run the function again after 1 second.
 		timeLabel.after(1000, countdown)
-
+	elif timeleft == 0:
+		start_btn.config(state='active', text='Play again', command=lambda: play_again(entry.get()))
+		
 
 # Driver Code
 
@@ -85,47 +97,58 @@ def countdown():
 root = tkinter.Tk()
 
 # set the title
-root.title("COLORGAME")
+root.title("COLOR GAME")
+#set the geometry
+root.geometry("600x600")
 
-# set the size
-root.geometry("375x250")
+#set the frames
+frame1=tkinter.Frame(root)
+frame1.place(relheight=0.7,relwidth=1)
 
+frame=tkinter.Frame(root)
+frame.place(rely=0.7,relheight=0.3,relwidth=1)
 # add an instructions label
-instructions = tkinter.Label(root, text = "Type in the colour of the words, and not the word text!",font = ('Helvetica', 12))
-instructions.pack()
-previous_highscore = tkinter.Label(root, text="Previous HighScore was "+str(highscore), font=('Helvetica', 12))
-previous_highscore.pack()
+instructions = tkinter.Label(frame1, text = "Type in the colour in which the words are written,\nand not the actual word text!",font = ('Helvetica', 12))
+instructions.place(relx=0.2, rely=0.02, relwidth=0.6)
+
+#previous highscore label
+previous_highscore = tkinter.Label(frame1, text="Previous HighScore: "+str(highscore), font=('Helvetica', 12))
+previous_highscore.place(relx=0.2, relwidth=0.6,rely=0.2)
 
 # add a score label
-scoreLabel = tkinter.Label(root, text = "Press enter to start",font = ('Helvetica', 12))
-scoreLabel.pack()
+scoreLabel = tkinter.Label(frame1,font = ('Helvetica', 12))
+scoreLabel.place(relx=0.2,relwidth=0.6, rely=0.3)
 
 # add a time left label
-timeLabel = tkinter.Label(root, text = "Time left: " +str(timeleft), font = ('Helvetica', 12))
+timeLabel = tkinter.Label(frame1, text = "Time left: " +str(timeleft), font = ('Helvetica', 12))
 
-timeLabel.pack()
+timeLabel.place(relx=0.2,relwidth=0.6, rely=0.4)
 
 # add a label for displaying the colours
-label = tkinter.Label(root, font = ('Helvetica', 60))
-label.pack()
+label = tkinter.Label(frame1, font = ('Helvetica', 60))
+label.place(relx=0.2, relwidth=0.6, rely=0.5, relheight=0.2)
 
 # add a text entry box for
 # typing in colours
-e = tkinter.Entry(root)
+entry = tkinter.Entry(frame1)
 
 # run the 'startGame' function
 # when the enter key is pressed
-root.bind('<Return>', startGame)
-e.pack()
+entry.place(relx=0.2, relwidth=0.6, rely=0.75,relheight=0.05)
 
 # set focus on the entry box
-e.focus_set()
+entry.focus_set()
 if timeleft < 0:
-	e.config(state='disabled')
+	entry.config(state='disabled')
 	
 
-close_btn = tkinter.Button(root, text="Close", command=root.destroy)
-close_btn.pack()
+#start button
+start_btn = tkinter.Button(frame, text="Start", state='active', command=lambda: startGame(entry.get()))
+start_btn.place(relx=0.275,relwidth=0.2,relheight=0.2)
+
+#close button
+close_btn = tkinter.Button(frame, text="Close", command=root.destroy)
+close_btn.place(relx=0.525,relwidth=0.2,relheight=0.2)
 # start the GUI
 root.mainloop()
 
