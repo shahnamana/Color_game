@@ -7,15 +7,33 @@ import re
 colours = ['Red','Blue','Green','Pink','Black',
 		'Yellow','Orange','Purple','Brown','Gray']
 score = 0
-filepath = open(r"words_score.txt", "r+")
 
-highscore = filepath.read()
-highscore = highscore.strip()
 
-highscore = int(highscore)
+def read_highscore():
+	filepath = open(r"words_score.txt", "r+")
+
+	highscore = filepath.read()
+	highscore = highscore.strip()
+
+	return int(highscore)
 
 # the game time left, initially 30 seconds.
 timeleft = 30
+
+highscore = read_highscore()
+
+def save_score(s_score):
+	global highscore
+
+	if s_score > highscore:
+		# str_score = str(score)
+		# filepath.write(str_score)
+		wr = open("words_score.txt", 'w')
+		wr.write(str(s_score))
+		# filepath.truncate()
+		# file_path.write(str(score))
+
+
 
 # function that will start the game.
 def startGame(event):
@@ -28,14 +46,18 @@ def startGame(event):
 		start_btn.config(state='disabled')
 		nextColour()
 		root.bind('<Return>', startGame)
-	
+
 #play again function
 def play_again(event):
-	global timeleft
 	global score
+	save_score(score)
+
+	global timeleft
 	score=0
 	timeleft=30
+	highscore = read_highscore()
 	startGame(entry.get())
+
 
 # Function to choose and
 # display the next colour.
@@ -60,11 +82,14 @@ def nextColour():
 		# clear the text entry box.
 		entry.delete(0, tkinter.END)
 
-		random.shuffle(colours)
+		random.shuffle(random.shuffle(colours))
 
 		# change the colour to type, by changing the
 		# text _and_ the colour to a random colour value
 		label.config(fg = str(colours[1]), text = str(colours[0]))
+
+		previous_highscore = tkinter.Label(frame1, text="Previous HighScore: "+str(read_highscore()), font=('Helvetica', 12))
+		previous_highscore.place(relx=0.2, relwidth=0.6,rely=0.2)
 
 		# update the score.
 		scoreLabel.config(text = "Score: " + str(score))
@@ -89,7 +114,7 @@ def countdown():
 		timeLabel.after(1000, countdown)
 	elif timeleft == 0:
 		start_btn.config(state='active', text='Play again', command=lambda: play_again(entry.get()))
-		
+
 
 # Driver Code
 
@@ -112,7 +137,7 @@ instructions = tkinter.Label(frame1, text = "Type in the colour in which the wor
 instructions.place(relx=0.2, rely=0.02, relwidth=0.6)
 
 #previous highscore label
-previous_highscore = tkinter.Label(frame1, text="Previous HighScore: "+str(highscore), font=('Helvetica', 12))
+previous_highscore = tkinter.Label(frame1, text="Previous HighScore: "+str(read_highscore()), font=('Helvetica', 12))
 previous_highscore.place(relx=0.2, relwidth=0.6,rely=0.2)
 
 # add a score label
@@ -140,7 +165,7 @@ entry.place(relx=0.2, relwidth=0.6, rely=0.75,relheight=0.05)
 entry.focus_set()
 if timeleft < 0:
 	entry.config(state='disabled')
-	
+
 
 #start button
 start_btn = tkinter.Button(frame, text="Start", state='active', command=lambda: startGame(entry.get()))
@@ -152,10 +177,4 @@ close_btn.place(relx=0.525,relwidth=0.2,relheight=0.2)
 # start the GUI
 root.mainloop()
 
-if score > highscore:
-	# str_score = str(score)
-	# filepath.write(str_score)
-	wr = open("words_score.txt", 'w')
-	wr.write(str(score))
-	# filepath.truncate()
-	# file_path.write(str(score))
+save_score(score)
