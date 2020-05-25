@@ -82,7 +82,7 @@ def nextColour():
 		# clear the text entry box.
 		entry.delete(0, tkinter.END)
 
-		random.shuffle(random.shuffle(colours))
+		random.shuffle(colours)
 
 		# change the colour to type, by changing the
 		# text _and_ the colour to a random colour value
